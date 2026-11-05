@@ -1,0 +1,191 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://materials/green.tres" id="1_umlsw"]
+[ext_resource type="Material" path="res://materials/grey.tres" id="2_808nj"]
+[ext_resource type="Material" path="res://materials/orange.tres" id="3_p3esp"]
+[ext_resource type="Material" path="res://materials/blue.tres" id="4_kt66c"]
+[ext_resource type="Material" path="res://materials/gold.tres" id="5_fimcb"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="6_ltvfy"]
+[ext_resource type="Script" path="res://scripts/kill_zone.gd" id="7_gsm8p"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30vpi"]
+size = Vector3(3, 0.5, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f0akq"]
+size = Vector3(3, 0.5, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4ry6h"]
+size = Vector3(200, 2, 200)
+
+[node name="TestStage" type="Node3D" unique_id=389632724]
+
+[node name="SpawnPoint" type="Marker3D" parent="." unique_id=55659222]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 14)
+
+[node name="Geometry" type="Node3D" parent="." unique_id=640700312]
+
+[node name="Ground" type="CSGBox3D" parent="Geometry" unique_id=1851452098]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+size = Vector3(40, 1, 40)
+material = ExtResource("1_umlsw")
+
+[node name="Step1" type="CSGBox3D" parent="Geometry" unique_id=408751609]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.05, 8)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.1, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step2" type="CSGBox3D" parent="Geometry" unique_id=643158649]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.1, 7.5)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.2, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step3" type="CSGBox3D" parent="Geometry" unique_id=1849400792]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.15, 7)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.3, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step4" type="CSGBox3D" parent="Geometry" unique_id=2110428867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.2, 6.5)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.4, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step5" type="CSGBox3D" parent="Geometry" unique_id=1937581602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.25, 6)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.5, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step6" type="CSGBox3D" parent="Geometry" unique_id=346057375]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, 5.5)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.6, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step7" type="CSGBox3D" parent="Geometry" unique_id=711650211]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.35, 5)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.7, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="Step8" type="CSGBox3D" parent="Geometry" unique_id=1631752336]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.4, 4.5)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.8, 0.5)
+material = ExtResource("2_808nj")
+
+[node name="GentleRamp" type="CSGBox3D" parent="Geometry" unique_id=1119308592]
+transform = Transform3D(1, 0, 0, 0, 0.9396926, -0.34202012, 0, 0.34202012, 0.9396926, 12, 1.475, 4)
+use_collision = true
+size = Vector3(4, 0.5, 10)
+material = ExtResource("2_808nj")
+
+[node name="SteepSlope" type="CSGBox3D" parent="Geometry" unique_id=1680067961]
+transform = Transform3D(1, 0, 0, 0, 0.57357645, -0.81915206, 0, 0.81915206, 0.57357645, 17, 2.32, -6)
+use_collision = true
+size = Vector3(4, 0.5, 6)
+material = ExtResource("3_p3esp")
+
+[node name="Platform1" type="CSGBox3D" parent="Geometry" unique_id=2052036945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -2)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.5, 3)
+material = ExtResource("4_kt66c")
+
+[node name="Platform2" type="CSGBox3D" parent="Geometry" unique_id=1902429514]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.75, -6)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.5, 3)
+material = ExtResource("4_kt66c")
+
+[node name="Platform3" type="CSGBox3D" parent="Geometry" unique_id=690554917]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.25, -10)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.5, 3)
+material = ExtResource("4_kt66c")
+
+[node name="TallBlock" type="CSGBox3D" parent="Geometry" unique_id=1956465672]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.25, -10)
+use_collision = true
+size = Vector3(6, 4.5, 6)
+material = ExtResource("2_808nj")
+
+[node name="WallKickA" type="CSGBox3D" parent="Geometry" unique_id=931374275]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 4, 6)
+use_collision = true
+size = Vector3(2, 8, 6)
+material = ExtResource("2_808nj")
+
+[node name="WallKickB" type="CSGBox3D" parent="Geometry" unique_id=1429947731]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.25, 3, 6)
+use_collision = true
+size = Vector3(0.5, 6, 6)
+material = ExtResource("2_808nj")
+
+[node name="Curb20" type="CSGBox3D" parent="Geometry" unique_id=14907898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.1, 9)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.2, 2)
+material = ExtResource("2_808nj")
+
+[node name="Curb30" type="CSGBox3D" parent="Geometry" unique_id=1217945039]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.15, 4)
+use_collision = true
+collision_layer = 8
+size = Vector3(3, 0.3, 2)
+material = ExtResource("2_808nj")
+
+[node name="GoalIsland" type="CSGBox3D" parent="Geometry" unique_id=1582373048]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -40)
+use_collision = true
+size = Vector3(10, 1, 10)
+material = ExtResource("1_umlsw")
+
+[node name="GoalPad" type="CSGCylinder3D" parent="Geometry" unique_id=1903960868]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -40)
+use_collision = true
+collision_layer = 8
+radius = 1.0
+height = 0.3
+sides = 24
+material = ExtResource("5_fimcb")
+
+[node name="MovingPlatforms" type="Node3D" parent="." unique_id=931783744]
+
+[node name="MovingPlatform" type="AnimatableBody3D" parent="MovingPlatforms" unique_id=1266168903]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.5, -14)
+collision_layer = 8
+script = ExtResource("6_ltvfy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MovingPlatforms/MovingPlatform" unique_id=2002311244]
+shape = SubResource("BoxShape3D_30vpi")
+
+[node name="Mesh" type="MeshInstance3D" parent="MovingPlatforms/MovingPlatform" unique_id=1284736179]
+material_override = ExtResource("4_kt66c")
+mesh = SubResource("BoxMesh_f0akq")
+
+[node name="KillZone" type="Area3D" parent="." unique_id=1782549900 node_paths=PackedStringArray("spawn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15, 0)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("7_gsm8p")
+spawn = NodePath("../SpawnPoint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillZone" unique_id=1970104543]
+shape = SubResource("BoxShape3D_4ry6h")

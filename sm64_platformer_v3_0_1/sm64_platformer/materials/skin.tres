@@ -1,0 +1,20 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lpjvj"]
+render_priority = 1
+transparency = 1
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0.35, 0.75, 1, 0.75)
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[resource]
+next_pass = SubResource("StandardMaterial3D_lpjvj")
+albedo_color = Color(0.96, 0.8, 0.65, 1)
+roughness = 0.85
+stencil_mode = 2
+stencil_flags = 2
+stencil_color = Color(0.35, 0.75, 1, 0.75)

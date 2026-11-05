@@ -1,0 +1,17 @@
+# Godot local cache: rebuilt automatically on every machine, never commit it
+# (its shader cache also has paths too long for Windows).
+.godot/
+
+# Godot 3 leftovers and exports
+.import/
+export.cfg
+export_presets.cfg
+*.translation
+
+# Version zips: use commits for history instead
+*.zip
+
+# OS clutter
+Thumbs.db
+desktop.ini
+.DS_Store

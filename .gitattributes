@@ -1,2 +1,13 @@
 # Auto detect text files and perform LF normalization
-* text=auto
+* text=auto eol=lf
+
+# Binary assets: never touch line endings or try to diff them
+*.glb binary
+*.gltf binary
+*.png binary
+*.jpg binary
+*.ogg binary
+*.wav binary
+*.zip binary
+*.scn binary
+*.res binary
