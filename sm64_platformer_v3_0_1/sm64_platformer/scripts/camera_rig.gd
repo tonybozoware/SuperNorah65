@@ -62,6 +62,13 @@ extends Node3D
 
 @onready var cam: Camera3D = $Camera3D
 
+@export_group("Board speed")
+@export var board_fov_add := 8.0         # degrees wider at boost speed
+@export var board_pull_back := 0.12      # 12% farther at boost speed
+@export var board_fx_rate := 2.5
+var _base_fov := 55.0
+var _speed_fx := 0.0
+
 var yaw := 0.0
 var pitch := 0.0
 var yaw_vel := 0.0
@@ -89,6 +96,7 @@ var _snap_next := true      # place the camera exactly (start, respawn)
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	pitch = deg_to_rad(default_pitch_deg)
+	_base_fov = cam.fov
 	_shape.radius = collision_radius
 	zoom_index = clampi(zoom_index, 0, zoom_levels.size() - 1)
 	zoom = zoom_levels[zoom_index]
@@ -147,6 +155,9 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("cam_zoom"):
 		_set_zoom((zoom_index + 1) % zoom_levels.size())
 	zoom = lerpf(zoom, zoom_levels[zoom_index], 1.0 - exp(-zoom_speed * delta))
+	var want_fx: float = target.board_speed_ratio() if target.has_method("board_speed_ratio") else 0.0
+	_speed_fx = lerpf(_speed_fx, want_fx, 1.0 - exp(-board_fx_rate * delta))
+	cam.fov = _base_fov + board_fov_add * _speed_fx
 	_update_focus(delta)
 	_update_tether(delta)
 	_update_input(delta)
@@ -155,7 +166,9 @@ func _process(delta: float) -> void:
 
 func _update_focus(delta: float) -> void:
 	var p := target.get_global_transform_interpolated().origin
-	if target.is_on_floor() or p.y < ground_y:
+	if "vert_air" in target and target.vert_air:
+		pass   # launched off a vertical: hold height and watch them rise and drop back in
+	elif target.is_grounded() or p.y < ground_y:
 		ground_y = p.y
 	elif p.y > ground_y + air_band:
 		ground_y = p.y - air_band
@@ -204,6 +217,8 @@ func _update_tether(delta: float) -> void:
 
 func _update_input(delta: float) -> void:
 	var stick := Input.get_vector("cam_left", "cam_right", "cam_up", "cam_down")
+	if target.has_method("tricks_on_right_stick") and target.tricks_on_right_stick():
+		stick = Vector2.ZERO   # the stick is doing tricks; the mouse still turns the camera
 	var t := 1.0 - exp(-input_smoothing * delta)
 	yaw_vel = lerpf(yaw_vel, -stick.x * stick_yaw_speed, t)
 	pitch_vel = lerpf(pitch_vel, -stick.y * stick_pitch_speed, t)
@@ -228,9 +243,10 @@ func _update_input(delta: float) -> void:
 ## Distance along the view direction for the current pitch (before zoom).
 func _distance() -> float:
 	var d := deg_to_rad(default_pitch_deg)
+	var mult := 1.0 + board_pull_back * _speed_fx
 	if pitch <= d:
-		return lerpf(mid_distance, far_distance, inverse_lerp(d, deg_to_rad(min_pitch_deg), pitch))
-	return lerpf(mid_distance, near_distance, inverse_lerp(d, deg_to_rad(max_pitch_deg), pitch))
+		return mult * lerpf(mid_distance, far_distance, inverse_lerp(d, deg_to_rad(min_pitch_deg), pitch))
+	return mult * lerpf(mid_distance, near_distance, inverse_lerp(d, deg_to_rad(max_pitch_deg), pitch))
 
 
 ## Camera position for a given wall rise and swing.

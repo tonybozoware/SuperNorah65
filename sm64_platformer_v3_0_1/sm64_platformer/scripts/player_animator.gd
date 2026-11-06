@@ -42,8 +42,13 @@ const CLIP_WISHES := {
 	"ledge_hang": ["LedgeHang", "Jump", "JumpAcross_Norah"],
 	"ledge_climb": ["LedgeClimb", "Crouch", "CrouchCoverIdle_Norah"],
 	"ground_pound": ["GroundPound", "Jump", "JumpAcross_Norah"],
+	"board": ["BoardStance", "Idle", "IdlePose_Norah"],
+	"board_crouch": ["BoardCrouch", "Crouch", "CrouchCoverIdle_Norah"],
 }
-const LOOPING := ["idle", "walk", "run", "crouch", "crawl", "fall", "ledge_hang", "skid"]
+const LOOPING := ["idle", "walk", "run", "crouch", "crawl", "fall", "ledge_hang", "skid", "board",
+	"board_crouch"]
+## Clips that already face sideways (so they are not turned again on the board).
+const SIDEWAYS_CLIPS := ["CrouchCoverIdle_Norah"]
 
 @onready var player: Player = get_parent()
 @onready var body: Node3D = $Body
@@ -53,6 +58,17 @@ const LOOPING := ["idle", "walk", "run", "crouch", "crawl", "fall", "ledge_hang"
 @onready var leg_l: Node3D = $Body/LegL
 @onready var leg_r: Node3D = $Body/LegR
 @onready var model_pivot: Node3D = get_node_or_null("ModelPivot")
+@onready var board: Node3D = get_node_or_null("Board")
+
+@export_group("Board")
+@export var board_bank := 0.22          # lean into turns, per rad/s of turning
+@export var board_max_bank := 0.45
+@export var board_stance_turn_deg := -90.0   # turns a forward-facing clip sideways on the deck
+@export var board_crouch_blend := 0.25   # s to sink into the charge crouch
+@export var board_stand_blend := 0.15    # s to stand back up
+@export var pad_glow := 2.0
+@export var pad_glow_charged := 9.0
+@export var pad_glow_boost := 6.0
 
 var _ap: AnimationPlayer
 var _clips := {}          # role -> clip name that exists
@@ -65,6 +81,16 @@ var _squash := 1.0
 var _last_state := -1
 var _roll_angle := 0.0
 var _state_time := 0.0
+var _bank := 0.0
+var _vis_spin := 0.0
+var _vis_flip := 0.0
+var _board_pop := 0.0
+var _rider_turn := 0.0
+var _rider_turn_speed := 100.0
+var _rider_clip := ""
+var _charge_flash := 0.0
+var _was_full := false
+var _pad_mats: Array[BaseMaterial3D] = []
 var _pose := {
 	"lean": 0.0, "roll": 0.0, "body_y": 0.0, "head": 0.0,
 	"arm_l": 0.0, "arm_r": 0.0, "arm_l_out": 0.1, "arm_r_out": 0.1,
@@ -74,6 +100,14 @@ var _pose := {
 
 func _ready() -> void:
 	_yaw = player.facing
+	if board:
+		board.visible = false
+		for pad in board.find_children("Pad*", "MeshInstance3D", false, false):
+			var mat := (pad as MeshInstance3D).material_override as BaseMaterial3D
+			if mat:
+				mat = mat.duplicate()
+				(pad as MeshInstance3D).material_override = mat
+				_pad_mats.append(mat)
 	if model_pivot:
 		_ap = model_pivot.find_child("AnimationPlayer", true, false)
 	var model_ok := use_model and _ap != null
@@ -121,9 +155,14 @@ func _process(delta: float) -> void:
 		_state_time += delta
 	var t := _state_time
 
-	# Facing: turn quickly rather than snapping (skids, wall kicks).
+	# Facing: turn quickly rather than snapping (skids, wall kicks). On the board a
+	# half turn (switching direction on a wall or ramp) snaps: the board is symmetric.
+	if st in Player.BOARD_STATES and absf(angle_difference(_yaw, player.facing)) > 2.5:
+		_yaw = player.facing
 	_yaw = lerp_angle(_yaw, player.facing, 1.0 - exp(-25.0 * delta))
 	rotation.y = _yaw
+	if _update_board(st, delta):
+		return
 
 	if st == S.ROLL:
 		_roll_angle = fmod(_roll_angle + delta * player.forward_speed * Player.U / 0.45, TAU)
@@ -457,12 +496,12 @@ func _update_clip(st: int) -> void:
 			_air("jump")
 
 
-func _play(role: String) -> String:
+func _play(role: String, blend := -1.0) -> String:
 	var clip: String = _clips.get(role, "")
 	if clip == "":
 		return ""
 	if clip != _current_clip:
-		_ap.play(clip, crossfade)
+		_ap.play(clip, crossfade if blend < 0.0 else blend)
 		_current_clip = clip
 	return clip
 
@@ -508,3 +547,104 @@ func _air(role: String) -> void:
 	var f := clampf(remap(player.vy, 40.0, -40.0, 0.15, 0.85), 0.15, 0.85)
 	_ap.speed_scale = 1.0   # see _hold: keeps crossfades running
 	_ap.seek(length * f, true)
+
+
+# ------------------------------------------------------------------ hoverboard
+## Rider pose and board while riding. Returns true when it handled the frame.
+func _update_board(st: int, delta: float) -> bool:
+	var riding := st in Player.BOARD_STATES
+	# Physics runs at 30 ticks a second; blend between the last two ticks so spins,
+	# flips and leaning draw at the display's frame rate.
+	var frac := Engine.get_physics_interpolation_fraction()
+	var turn_rate := lerpf(player.board_turn_rate_prev, player.board_turn_rate, frac)
+	if board == null:
+		return false
+	if not riding:
+		if board.visible:   # just got off: put the rider back upright
+			board.visible = false
+			body.transform = Transform3D(Basis(), Vector3(0.0, 0.8, 0.0))
+			head.rotation = Vector3.ZERO
+			if model_pivot:
+				model_pivot.transform = Transform3D(Basis(), Vector3(0.0, 0.8, 0.0))
+		_board_pop = 0.0
+		_rider_clip = ""
+		_bank = 0.0
+		_vis_spin = 0.0
+		_vis_flip = 0.0
+		return false
+
+	# Tricks: follow the player's spin/flip in the air, then settle to upright.
+	if st == S.BOARD_AIR and (player.trick_spin != 0.0 or player.trick_flip != 0.0):
+		_vis_spin = lerpf(player.trick_spin_prev, player.trick_spin, frac)
+		_vis_flip = lerpf(player.trick_flip_prev, player.trick_flip, frac)
+	else:
+		var settle := 1.0 - exp(-14.0 * delta)
+		_vis_spin = lerpf(_vis_spin, roundf(_vis_spin / TAU) * TAU, settle)
+		_vis_flip = lerpf(_vis_flip, roundf(_vis_flip / TAU) * TAU, settle)
+	rotation.y = _yaw - _vis_spin
+	scale = Vector3.ONE
+	_squash = 1.0
+
+	# Lean into turns (less in the air), tilt with the ground under the board.
+	var want_bank := clampf(turn_rate * board_bank, -board_max_bank, board_max_bank)
+	if st == S.BOARD_AIR:
+		want_bank *= 0.4
+	_bank = lerpf(_bank, want_bank, 1.0 - exp(-8.0 * delta))
+	var local_n := player.board_normal.rotated(Vector3.UP, -rotation.y)
+	var tilt := Basis(Quaternion(Vector3.UP, local_n.normalized()))
+	var r := tilt * Basis(Vector3.BACK, _bank) * Basis(Vector3.RIGHT, -_vis_flip)
+
+	_board_pop = minf(_board_pop + delta * 6.0, 1.0)
+	board.visible = true
+	board.transform = Transform3D(r.scaled(Vector3.ONE * _ease(_board_pop)), r * Vector3(0.0, -0.04, 0.0))
+	# Pads: brighter when boosting, a flash on reaching full charge.
+	var full := player.board_charging and player.board_charge >= 1.0
+	if full and not _was_full:
+		_charge_flash = 0.18
+	_was_full = full
+	_charge_flash = maxf(_charge_flash - delta, 0.0)
+	var glow := pad_glow_boost if player.boosting else pad_glow
+	if _charge_flash > 0.0:
+		for mat in _pad_mats:
+			mat.emission_energy_multiplier = pad_glow_charged
+	else:
+		for mat in _pad_mats:
+			mat.emission_energy_multiplier = lerpf(mat.emission_energy_multiplier, glow, 1.0 - exp(-10.0 * delta))
+
+	# Rider: stands sideways on the deck, crouches while charging a jump; rotates
+	# about the feet with the board.
+	var charging := player.board_charging and st == S.BOARD
+	var tuck := 0.04 if st == S.BOARD_AIR else 0.0
+	var hip := r * Vector3(0.0, 0.8 - tuck, 0.0)
+	var side := r * Basis(Vector3.UP, -PI * 0.5)
+	if model_pivot and model_pivot.visible:
+		var role := "board_crouch" if charging else "board"
+		var blend := board_crouch_blend if charging else board_stand_blend
+		var clip: String = _clips.get(role, "")
+		# Forward-facing clips are turned sideways; Norah's crouch-cover clip already
+		# is. The turn eases over the same time as the crossfade so she doesn't spin.
+		var want_turn := 0.0 if clip in SIDEWAYS_CLIPS else deg_to_rad(board_stance_turn_deg)
+		if clip != _rider_clip:
+			_rider_turn_speed = absf(want_turn - _rider_turn) / maxf(blend, 0.01) if _rider_clip != "" else 1000.0
+			_rider_clip = clip
+		_rider_turn = move_toward(_rider_turn, want_turn, _rider_turn_speed * delta)
+		model_pivot.transform = Transform3D(r * Basis(Vector3.UP, _rider_turn), hip)
+		if _play(role, blend) != "":
+			_ap.speed_scale = 1.0
+	else:
+		body.transform = Transform3D(side, hip)
+		var t := {
+			"lean": 0.0, "roll": 0.0, "body_y": 0.0, "head": 0.0,
+			"arm_l": 0.3, "arm_r": 0.3, "arm_l_out": 0.9, "arm_r_out": 0.9,
+			"leg_l": 0.3 + 0.8 * player.board_charge, "leg_r": 0.3 + 0.8 * player.board_charge,
+		}
+		body.transform = Transform3D(side, r * Vector3(0.0, 0.8 - 0.25 * player.board_charge - tuck, 0.0))
+		var blend := 1.0 - exp(-pose_sharpness * delta)
+		for key in _pose:
+			_pose[key] = lerpf(_pose[key], t[key], blend)
+		head.rotation = Vector3(0.0, PI * 0.5, 0.0)   # look where the board goes
+		arm_l.rotation = Vector3(_pose.arm_l, 0.0, _pose.arm_l_out)
+		arm_r.rotation = Vector3(_pose.arm_r, 0.0, -_pose.arm_r_out)
+		leg_l.rotation.x = _pose.leg_l
+		leg_r.rotation.x = _pose.leg_r
+	return true

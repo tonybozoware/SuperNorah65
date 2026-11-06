@@ -16,20 +16,20 @@ ambient_light_source = 3
 ambient_light_energy = 0.6
 tonemap_mode = 4
 
-[node name="Main" type="Node3D" unique_id=1706115801]
+[node name="Main" type="Node3D" unique_id=1202800501]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=741720953]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1033261219]
 environment = SubResource("Environment_tipki")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=89637233]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1514554723]
 transform = Transform3D(0.8660254, 0.38302222, -0.32139382, 0, 0.64278764, 0.76604444, 0.5, -0.66341394, 0.5566704, 0, 0, 0)
 light_energy = 0.9
 shadow_enabled = true
 
-[node name="TestStage" parent="." unique_id=389632724 instance=ExtResource("1_sugp2")]
+[node name="TestStage" parent="." unique_id=2029535953 instance=ExtResource("1_sugp2")]
 
-[node name="Player" parent="." unique_id=46227874 instance=ExtResource("2_jyhfs")]
+[node name="Player" parent="." unique_id=1716239205 instance=ExtResource("2_jyhfs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 14)
 
-[node name="CameraRig" parent="." unique_id=629882786 node_paths=PackedStringArray("target") instance=ExtResource("3_tbgi4")]
+[node name="CameraRig" parent="." unique_id=91190368 node_paths=PackedStringArray("target") instance=ExtResource("3_tbgi4")]
 target = NodePath("../Player")

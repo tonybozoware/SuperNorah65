@@ -1,44 +1,30 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_smehm"]
-[ext_resource type="Script" path="res://scripts/player_animator.gd" id="2_ur7pv"]
-[ext_resource type="Material" path="res://materials/shirt.tres" id="3_y4r1p"]
-[ext_resource type="Material" path="res://materials/skin.tres" id="4_d2wvv"]
-[ext_resource type="Material" path="res://materials/pants.tres" id="5_3v2ag"]
-[ext_resource type="Material" path="res://materials/shoes.tres" id="6_jej6c"]
-[ext_resource type="PackedScene" path="res://models/norah/NorahStarr.glb" id="7_f1ej7"]
-[ext_resource type="Script" path="res://scripts/player_fx.gd" id="8_oprun"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_y4r1p"]
+[ext_resource type="Script" path="res://scripts/player_animator.gd" id="2_d2wvv"]
+[ext_resource type="Material" path="res://materials/shirt.tres" id="3_3v2ag"]
+[ext_resource type="Material" path="res://materials/skin.tres" id="4_jej6c"]
+[ext_resource type="Material" path="res://materials/pants.tres" id="5_f1ej7"]
+[ext_resource type="Material" path="res://materials/shoes.tres" id="6_oprun"]
+[ext_resource type="PackedScene" path="res://models/norah/NorahStarr.glb" id="7_a8ls1"]
+[ext_resource type="Material" path="res://materials/board_deck.tres" id="8_qfm1y"]
+[ext_resource type="Material" path="res://materials/board_pad.tres" id="9_fulsm"]
+[ext_resource type="Script" path="res://scripts/player_fx.gd" id="10_4r5pv"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a8ls1"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_60mlk"]
 radius = 0.35
 height = 1.6
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_qfm1y"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_i4ail"]
 radius = 0.28
 height = 0.62
 
-[sub_resource type="SphereMesh" id="SphereMesh_fulsm"]
+[sub_resource type="SphereMesh" id="SphereMesh_a38lo"]
 radius = 0.27
 height = 0.54
 
-[sub_resource type="SphereMesh" id="SphereMesh_4r5pv"]
-radius = 0.07
-height = 0.14
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_60mlk"]
-radius = 0.08
-height = 0.42
-
-[sub_resource type="SphereMesh" id="SphereMesh_i4ail"]
-radius = 0.1
-height = 0.2
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_a38lo"]
-radius = 0.11
-height = 0.4
-
 [sub_resource type="SphereMesh" id="SphereMesh_4ni07"]
-radius = 0.13
+radius = 0.07
 height = 0.14
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_l71n6"]
@@ -57,99 +43,175 @@ height = 0.4
 radius = 0.13
 height = 0.14
 
-[node name="Player" type="CharacterBody3D" unique_id=46227874]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_pf23h"]
+radius = 0.08
+height = 0.42
+
+[sub_resource type="SphereMesh" id="SphereMesh_dt7fs"]
+radius = 0.1
+height = 0.2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wqfne"]
+radius = 0.11
+height = 0.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_wnwbv"]
+radius = 0.13
+height = 0.14
+
+[sub_resource type="BoxMesh" id="BoxMesh_gl8cc"]
+size = Vector3(0.4, 0.08, 0.9)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_487ah"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.08
+radial_segments = 24
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_md1ol"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.08
+radial_segments = 24
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bj30b"]
+top_radius = 0.13
+bottom_radius = 0.13
+height = 0.05
+radial_segments = 20
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jc3p3"]
+top_radius = 0.13
+bottom_radius = 0.13
+height = 0.05
+radial_segments = 20
+rings = 1
+
+[node name="Player" type="CharacterBody3D" unique_id=1716239205]
 collision_layer = 2
 collision_mask = 13
 floor_snap_length = 0.5
-script = ExtResource("1_smehm")
+script = ExtResource("1_y4r1p")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1483203552]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1564001519]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = SubResource("CapsuleShape3D_a8ls1")
+shape = SubResource("CapsuleShape3D_60mlk")
 
-[node name="Visual" type="Node3D" parent="." unique_id=494530822]
+[node name="Visual" type="Node3D" parent="." unique_id=176455292]
 physics_interpolation_mode = 2
-script = ExtResource("2_ur7pv")
+script = ExtResource("2_d2wvv")
 
-[node name="Body" type="Node3D" parent="Visual" unique_id=697119830]
+[node name="Body" type="Node3D" parent="Visual" unique_id=1167316638]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 visible = false
 
-[node name="Torso" type="MeshInstance3D" parent="Visual/Body" unique_id=1119155506]
+[node name="Torso" type="MeshInstance3D" parent="Visual/Body" unique_id=1069302887]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
-material_override = ExtResource("3_y4r1p")
-mesh = SubResource("CapsuleMesh_qfm1y")
+material_override = ExtResource("3_3v2ag")
+mesh = SubResource("CapsuleMesh_i4ail")
 
-[node name="HeadPivot" type="Node3D" parent="Visual/Body" unique_id=1298499086]
+[node name="HeadPivot" type="Node3D" parent="Visual/Body" unique_id=1945502298]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Visual/Body/HeadPivot" unique_id=1260075672]
+[node name="Head" type="MeshInstance3D" parent="Visual/Body/HeadPivot" unique_id=1397023601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0)
-material_override = ExtResource("4_d2wvv")
-mesh = SubResource("SphereMesh_fulsm")
+material_override = ExtResource("4_jej6c")
+mesh = SubResource("SphereMesh_a38lo")
 
-[node name="Nose" type="MeshInstance3D" parent="Visual/Body/HeadPivot" unique_id=350843123]
+[node name="Nose" type="MeshInstance3D" parent="Visual/Body/HeadPivot" unique_id=1197041981]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, -0.27)
-material_override = ExtResource("4_d2wvv")
-mesh = SubResource("SphereMesh_4r5pv")
-
-[node name="ArmL" type="Node3D" parent="Visual/Body" unique_id=249823593]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0.18, 0)
-
-[node name="UpperArm" type="MeshInstance3D" parent="Visual/Body/ArmL" unique_id=2059761922]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
-material_override = ExtResource("3_y4r1p")
-mesh = SubResource("CapsuleMesh_60mlk")
-
-[node name="Hand" type="MeshInstance3D" parent="Visual/Body/ArmL" unique_id=847724573]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, 0)
-material_override = ExtResource("4_d2wvv")
-mesh = SubResource("SphereMesh_i4ail")
-
-[node name="LegL" type="Node3D" parent="Visual/Body" unique_id=1734672610]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, -0.32, 0)
-
-[node name="Leg" type="MeshInstance3D" parent="Visual/Body/LegL" unique_id=2092507486]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
-material_override = ExtResource("5_3v2ag")
-mesh = SubResource("CapsuleMesh_a38lo")
-
-[node name="Foot" type="MeshInstance3D" parent="Visual/Body/LegL" unique_id=1639014303]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41, -0.06)
-material_override = ExtResource("6_jej6c")
+material_override = ExtResource("4_jej6c")
 mesh = SubResource("SphereMesh_4ni07")
 
-[node name="ArmR" type="Node3D" parent="Visual/Body" unique_id=186324512]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32, 0.18, 0)
+[node name="ArmL" type="Node3D" parent="Visual/Body" unique_id=1866028382]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0.18, 0)
 
-[node name="UpperArm" type="MeshInstance3D" parent="Visual/Body/ArmR" unique_id=261592060]
+[node name="UpperArm" type="MeshInstance3D" parent="Visual/Body/ArmL" unique_id=409095301]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
-material_override = ExtResource("3_y4r1p")
+material_override = ExtResource("3_3v2ag")
 mesh = SubResource("CapsuleMesh_l71n6")
 
-[node name="Hand" type="MeshInstance3D" parent="Visual/Body/ArmR" unique_id=1120233859]
+[node name="Hand" type="MeshInstance3D" parent="Visual/Body/ArmL" unique_id=1806837361]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, 0)
-material_override = ExtResource("4_d2wvv")
+material_override = ExtResource("4_jej6c")
 mesh = SubResource("SphereMesh_ke2ow")
 
-[node name="LegR" type="Node3D" parent="Visual/Body" unique_id=670379275]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, -0.32, 0)
+[node name="LegL" type="Node3D" parent="Visual/Body" unique_id=952897947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, -0.32, 0)
 
-[node name="Leg" type="MeshInstance3D" parent="Visual/Body/LegR" unique_id=639279512]
+[node name="Leg" type="MeshInstance3D" parent="Visual/Body/LegL" unique_id=1249577562]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
-material_override = ExtResource("5_3v2ag")
+material_override = ExtResource("5_f1ej7")
 mesh = SubResource("CapsuleMesh_ujl30")
 
-[node name="Foot" type="MeshInstance3D" parent="Visual/Body/LegR" unique_id=898790063]
+[node name="Foot" type="MeshInstance3D" parent="Visual/Body/LegL" unique_id=11750986]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41, -0.06)
-material_override = ExtResource("6_jej6c")
+material_override = ExtResource("6_oprun")
 mesh = SubResource("SphereMesh_31cv2")
 
-[node name="ModelPivot" type="Node3D" parent="Visual" unique_id=2139054874]
+[node name="ArmR" type="Node3D" parent="Visual/Body" unique_id=794250684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32, 0.18, 0)
+
+[node name="UpperArm" type="MeshInstance3D" parent="Visual/Body/ArmR" unique_id=1127796715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
+material_override = ExtResource("3_3v2ag")
+mesh = SubResource("CapsuleMesh_pf23h")
+
+[node name="Hand" type="MeshInstance3D" parent="Visual/Body/ArmR" unique_id=1343845033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.42, 0)
+material_override = ExtResource("4_jej6c")
+mesh = SubResource("SphereMesh_dt7fs")
+
+[node name="LegR" type="Node3D" parent="Visual/Body" unique_id=410322079]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, -0.32, 0)
+
+[node name="Leg" type="MeshInstance3D" parent="Visual/Body/LegR" unique_id=1927932523]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+material_override = ExtResource("5_f1ej7")
+mesh = SubResource("CapsuleMesh_wqfne")
+
+[node name="Foot" type="MeshInstance3D" parent="Visual/Body/LegR" unique_id=466641270]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41, -0.06)
+material_override = ExtResource("6_oprun")
+mesh = SubResource("SphereMesh_wnwbv")
+
+[node name="ModelPivot" type="Node3D" parent="Visual" unique_id=1494554276]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 
-[node name="Norah" parent="Visual/ModelPivot" unique_id=850084647 instance=ExtResource("7_f1ej7")]
+[node name="Norah" parent="Visual/ModelPivot" unique_id=850084647 instance=ExtResource("7_a8ls1")]
 transform = Transform3D(-0.8179959, 0, -7.151147e-08, 0, 0.8179959, 0, 7.151147e-08, 0, -0.8179959, 0, -0.8, 0)
 
-[node name="FX" type="Node3D" parent="." unique_id=164178985]
-script = ExtResource("8_oprun")
+[node name="Board" type="Node3D" parent="Visual" unique_id=226086396]
+visible = false
+
+[node name="Deck" type="MeshInstance3D" parent="Visual/Board" unique_id=1360397113]
+material_override = ExtResource("8_qfm1y")
+mesh = SubResource("BoxMesh_gl8cc")
+
+[node name="Nose" type="MeshInstance3D" parent="Visual/Board" unique_id=1296951826]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.45)
+material_override = ExtResource("8_qfm1y")
+mesh = SubResource("CylinderMesh_487ah")
+
+[node name="Tail" type="MeshInstance3D" parent="Visual/Board" unique_id=1122913419]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.45)
+material_override = ExtResource("8_qfm1y")
+mesh = SubResource("CylinderMesh_md1ol")
+
+[node name="PadFront" type="MeshInstance3D" parent="Visual/Board" unique_id=224205022]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.065, -0.35)
+material_override = ExtResource("9_fulsm")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_bj30b")
+
+[node name="PadBack" type="MeshInstance3D" parent="Visual/Board" unique_id=1952778739]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.065, 0.35)
+material_override = ExtResource("9_fulsm")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_jc3p3")
+
+[node name="FX" type="Node3D" parent="." unique_id=1911724216]
+script = ExtResource("10_4r5pv")

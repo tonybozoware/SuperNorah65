@@ -17,6 +17,8 @@ The first open takes a few seconds while Godot imports the project.
 | Recenter camera | R | LB / L1 |
 | Camera zoom (Near / Normal / Far) | Z or mouse wheel | Right stick click (R3) |
 | Free the mouse | Esc (click to capture again) | |
+| Hoverboard on / off | F | B / Circle |
+| Boost (on the board) | Shift | Triggers |
 
 Moves: single/double/triple jump (jump again right as you land), long jump
 (run, crouch, jump), backflip (stand, crouch, jump), side flip (reverse the
@@ -32,6 +34,37 @@ switched off): coyote time, jump/crouch/dive buffering, corner correction, step-
 and ledge assist (lips up to 0.3 m), apex hang, faster fall, quicker low-speed
 turning, slope momentum. The FX node adds a landing shadow, dust puffs and
 controller rumble.
+
+## Hoverboard
+
+Press F (B / Circle) to summon the board, on the ground or in the air; press it
+again to step off and keep your speed. Riding: the stick steers (wide, momentum-heavy
+turns that drift at speed), pull the stick back to brake and then reverse slowly,
+hold Shift / a trigger to boost (the meter drains in about 3 s and refills after
+you let go), hold jump to crouch and charge, then let go to jump: a quick tap jumps about 2.2 m, a full 0.35 s charge 4.5 m, and the board drifts down slower than it rises (long drops speed back up after 1.5 s) (the pads flash when it's full). Letting go just after riding off an edge still jumps. In the air, the left
+stick steers and the right stick (arrow keys) does tricks: sideways to spin, up/down to
+flip, diagonals for both, faster the further you push; the mouse still turns the camera; land a trick of 300
+degrees or more to refill part of the boost meter. Slopes speed you up and slow you
+down more than on foot. The board holds its height briefly over drops. Glancing off
+a wall slides you along it; hitting one head-on at speed knocks you off.
+
+Test course: east of the main stage (keep running along +X past the ramps), with a
+kicker ramp over a 6 m gap, then a plateau with a long ramp to ride up or down.
+
+Skate plaza: west of the main stage (head along -X). Half pipe (stairs up to the east
+deck), sunken bowl, spine, quarter pipes along the north edge, funbox with kickers and a
+ledge, a stair set with a down-ledge, and a long wide ledge. Orange pieces (ledges and
+coping) throw sparks when you ride along them; there is no grind mode, just ride along the
+top and keep your balance. The board rides any surface it's lined up with, so curves carry
+you up to vertical; a sharp corner from flat ground is still a wall (head-on at speed
+knocks you off). On steep walls you need about 4 m/s to stay on. Going straight up a
+vertical keeps you lined up so you drop back in; hold the left stick toward the deck as
+you launch to fly out onto it instead. Rolling slowly over a lip drops you in down the wall.
+
+All board tuning is in the Player's Inspector under "Hoverboard (m/s)"; the camera's
+speed pull-back and FOV are under "Board speed" on the CameraRig; the trail is on FX.
+Clips named BoardStance (standing) and BoardCrouch (charging) in the .glb are used
+automatically; until then Norah stands in her Idle pose and crouches with her crouch clip.
 
 Movement logic runs at 30 ticks per second like SM64 (Project Settings > Physics),
 with physics interpolation keeping the visuals smooth. Speeds in `player.gd` are in
@@ -66,4 +99,4 @@ Her clips are used where they fit (idle, walk/run by speed, crouch, jump matched
 to the jump arc); other moves reuse the nearest clip plus whole-body motion in
 code. Animations added to the .glb with these names are picked up automatically:
 Idle, Walk, Run, Skid, Crouch, Crawl, Slide, Jump, DoubleJump, Flip, Fall, Dive,
-LedgeHang, LedgeClimb, GroundPound.
+LedgeHang, LedgeClimb, GroundPound, BoardStance, BoardCrouch.
