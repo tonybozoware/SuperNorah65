@@ -767,6 +767,13 @@ func _try_ledge_grab() -> bool:
 	sq.exclude = [get_rid()]
 	if not space.intersect_shape(sq, 1).is_empty():
 		return false
+	# Don't hang with the feet almost on the floor (e.g. beside a low block): just
+	# land instead. The ray starts above the hang spot, since a ray starting inside
+	# the floor wouldn't see it.
+	var hang_at := Vector3(wall.position.x, top.position.y - ledge_hang_drop, wall.position.z) + n * (radius + 0.03)
+	var floor_q := PhysicsRayQueryParameters3D.create(hang_at + Vector3.UP * 1.0, hang_at + Vector3.DOWN * 0.5, WORLD_MASK, [get_rid()])
+	if not space.intersect_ray(floor_q).is_empty():
+		return false
 	facing = _yaw_of(-n)
 	ledge_top = stand_at
 	ledge_hang_pos = Vector3(wall.position.x, top.position.y - ledge_hang_drop, wall.position.z) + n * (radius + 0.03)

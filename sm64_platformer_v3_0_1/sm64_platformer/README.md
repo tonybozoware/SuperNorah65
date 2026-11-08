@@ -1,4 +1,4 @@
-# SM64-Style Platformer (Godot 4.6.2 greybox)
+# Biryani64 (Godot 4.6.2 greybox, SM64-style movement)
 
 Open this folder in Godot 4.6.2 (Project Manager > Import > select `project.godot`), then press F5.
 The first open takes a few seconds while Godot imports the project.
