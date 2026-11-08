@@ -55,15 +55,3 @@ Camera: tether follow, looks ahead to the landing spot when falling, tilts to ke
 you framed, three zoom levels, and avoids walls by rising, then swinging round, then
 pulling in only as a last resort. While the camera adjusts itself, a held stick keeps
 its direction, so automatic camera moves don't steer you.
-
-## Player model (Norah)
-
-The player uses the Norah model (`models/norah/NorahStarr.glb`), scaled to the
-1.6 m collision, guns kept. Untick **Use Model** on Player > Visual to switch
-back to the primitive body.
-
-Her clips are used where they fit (idle, walk/run by speed, crouch, jump matched
-to the jump arc); other moves reuse the nearest clip plus whole-body motion in
-code. Animations added to the .glb with these names are picked up automatically:
-Idle, Walk, Run, Skid, Crouch, Crawl, Slide, Jump, DoubleJump, Flip, Fall, Dive,
-LedgeHang, LedgeClimb, GroundPound.

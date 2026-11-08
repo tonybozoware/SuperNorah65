@@ -6,7 +6,6 @@
 [ext_resource type="Material" path="res://materials/skin.tres" id="4_d2wvv"]
 [ext_resource type="Material" path="res://materials/pants.tres" id="5_3v2ag"]
 [ext_resource type="Material" path="res://materials/shoes.tres" id="6_jej6c"]
-[ext_resource type="PackedScene" path="res://models/norah/NorahStarr.glb" id="7_f1ej7"]
 [ext_resource type="Script" path="res://scripts/player_fx.gd" id="8_oprun"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a8ls1"]
@@ -73,7 +72,6 @@ script = ExtResource("2_ur7pv")
 
 [node name="Body" type="Node3D" parent="Visual" unique_id=697119830]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-visible = false
 
 [node name="Torso" type="MeshInstance3D" parent="Visual/Body" unique_id=1119155506]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
@@ -144,12 +142,6 @@ mesh = SubResource("CapsuleMesh_ujl30")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41, -0.06)
 material_override = ExtResource("6_jej6c")
 mesh = SubResource("SphereMesh_31cv2")
-
-[node name="ModelPivot" type="Node3D" parent="Visual" unique_id=2139054874]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-
-[node name="Norah" parent="Visual/ModelPivot" unique_id=850084647 instance=ExtResource("7_f1ej7")]
-transform = Transform3D(-0.8179959, 0, -7.151147e-08, 0, 0.8179959, 0, 7.151147e-08, 0, -0.8179959, 0, -0.8, 0)
 
 [node name="FX" type="Node3D" parent="." unique_id=164178985]
 script = ExtResource("8_oprun")

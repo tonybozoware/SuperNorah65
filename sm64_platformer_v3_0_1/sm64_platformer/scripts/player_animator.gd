@@ -2,48 +2,12 @@ extends Node3D
 ## Player animation. Lives on Player/Visual and reads the player's state.
 ##
 ## Whole-body motion (facing, squash, lean, flips, spins) is done in code on
-## Visual (pivot at the feet) and on the hip pivots (Body / ModelPivot).
-##
-## With use_model on, the Norah model plays her clips for each state:
-## idle, walk/run blended by speed, crouch, and the jump clip matched to the
-## jump arc. States without a clip of their own reuse the nearest clip plus the
-## whole-body motion. Clips added later are picked up automatically by name
-## (see CLIP_WISHES), e.g. "Fall", "LedgeHang", "Slide", "Skid", "Flip".
-##
-## With use_model off, the primitive body is posed part by part instead.
+## Visual (pivot at the feet) and on the hip pivot (Body). The primitive body is
+## then posed part by part (head, arms, legs) for each state.
 
 const S := Player.State
 
 @export var pose_sharpness := 18.0
-
-@export_group("Model")
-@export var use_model := true
-@export var crossfade := 0.15
-@export var walk_ref_speed := 0.61     # m/s the Walk clip covers at normal speed (measured)
-@export var run_ref_speed := 2.07      # m/s the Run clip covers at normal speed (measured)
-@export var walk_run_switch := 3.0     # m/s
-@export var max_clip_speed := 2.4      # cap so the run doesn't look frantic at top speed
-
-## Preferred clip names per role, first match wins. Add clips with these names in
-## Blender and they are used automatically; the last name is Norah's fallback.
-const CLIP_WISHES := {
-	"idle": ["Idle", "IdlePose_Norah"],
-	"walk": ["Walk", "Walk_Norah"],
-	"run": ["Run", "Run_Norah"],
-	"skid": ["Skid", "Run_Norah"],
-	"crouch": ["Crouch", "CrouchCoverIdle_Norah"],
-	"crawl": ["Crawl", "CrouchCoverIdle_Norah"],
-	"slide": ["Slide", "CrouchCover_Norah"],
-	"jump": ["Jump", "JumpAcross_Norah"],
-	"double_jump": ["DoubleJump", "Jump", "JumpAcross_Norah"],
-	"flip": ["Flip", "Jump", "JumpAcross_Norah"],
-	"fall": ["Fall", "Jump", "JumpAcross_Norah"],
-	"dive": ["Dive", "Jump", "JumpAcross_Norah"],
-	"ledge_hang": ["LedgeHang", "Jump", "JumpAcross_Norah"],
-	"ledge_climb": ["LedgeClimb", "Crouch", "CrouchCoverIdle_Norah"],
-	"ground_pound": ["GroundPound", "Jump", "JumpAcross_Norah"],
-}
-const LOOPING := ["idle", "walk", "run", "crouch", "crawl", "fall", "ledge_hang", "skid"]
 
 @onready var player: Player = get_parent()
 @onready var body: Node3D = $Body
@@ -52,11 +16,6 @@ const LOOPING := ["idle", "walk", "run", "crouch", "crawl", "fall", "ledge_hang"
 @onready var arm_r: Node3D = $Body/ArmR
 @onready var leg_l: Node3D = $Body/LegL
 @onready var leg_r: Node3D = $Body/LegR
-@onready var model_pivot: Node3D = get_node_or_null("ModelPivot")
-
-var _ap: AnimationPlayer
-var _clips := {}          # role -> clip name that exists
-var _current_clip := ""
 
 var _cycle := 0.0
 var _time := 0.0
@@ -74,38 +33,6 @@ var _pose := {
 
 func _ready() -> void:
 	_yaw = player.facing
-	if model_pivot:
-		_ap = model_pivot.find_child("AnimationPlayer", true, false)
-	var model_ok := use_model and _ap != null
-	body.visible = not model_ok
-	if model_pivot:
-		model_pivot.visible = model_ok
-	if not model_ok:
-		return
-	for role in CLIP_WISHES:
-		for name in CLIP_WISHES[role]:
-			if _ap.has_animation(name):
-				_clips[role] = name
-				# Only loop dedicated clips, or Norah's own looping ones (idle/walk/run/crouch).
-				if role in LOOPING and (name == CLIP_WISHES[role][0] or role in ["idle", "walk", "run", "crouch", "crawl"]):
-					_ap.get_animation(name).loop_mode = Animation.LOOP_LINEAR
-				break
-	_xray_materials(model_pivot)
-
-
-## Give the model the same see-through-walls silhouette as the primitive body.
-func _xray_materials(node: Node) -> void:
-	for child in node.get_children():
-		var mi := child as MeshInstance3D
-		if mi and mi.mesh:
-			for i in mi.mesh.get_surface_count():
-				var mat := mi.get_active_material(i) as BaseMaterial3D
-				if mat:
-					var copy := mat.duplicate() as BaseMaterial3D
-					copy.stencil_mode = BaseMaterial3D.STENCIL_MODE_XRAY
-					copy.stencil_color = Color(0.35, 0.75, 1.0, 0.75)
-					mi.set_surface_override_material(i, copy)
-		_xray_materials(child)
 
 
 func _process(delta: float) -> void:
@@ -142,18 +69,6 @@ func _process(delta: float) -> void:
 
 	body.position.y = 0.8 + _pose.body_y
 	body.rotation = Vector3(_pose.lean + spin.x, 0.0, _pose.roll + spin.z)
-	if model_pivot and model_pivot.visible:
-		# The model's own clips already crouch and lean, so only add whole-body motion
-		# the clips don't have.
-		var lean: float = _pose.lean
-		var body_y: float = _pose.body_y
-		if st in [S.CROUCH, S.CRAWL, S.CROUCH_SLIDE, S.BELLY_GETUP, S.POUND_LAND, S.LEDGE_CLIMB]:
-			lean *= 0.3
-			body_y = 0.0
-		model_pivot.position.y = 0.8 + body_y
-		model_pivot.rotation = Vector3(lean + spin.x, 0.0, _pose.roll + spin.z)
-		_update_clip(st)
-		return
 	head.rotation.x = _pose.head
 	arm_l.rotation = Vector3(_pose.arm_l, 0.0, _pose.arm_l_out)
 	arm_r.rotation = Vector3(_pose.arm_r, 0.0, -_pose.arm_r_out)
@@ -414,97 +329,3 @@ func _ease(x: float) -> float:
 	x = clampf(x, 0.0, 1.0)
 	return x * x * (3.0 - 2.0 * x)
 
-
-# ------------------------------------------------------------------ model clips
-func _update_clip(st: int) -> void:
-	var v := player.forward_speed * Player.U   # m/s
-	match st:
-		S.IDLE:
-			_loop("idle", 1.0)
-		S.WALK, S.LAND, S.SKID_END:
-			if v < 0.3:
-				_loop("idle", 1.0)
-			elif v < walk_run_switch:
-				_loop("walk", clampf(v / walk_ref_speed, 0.6, 2.0))
-			else:
-				_loop("run", clampf(v / run_ref_speed, 1.0, max_clip_speed))
-		S.BRAKE, S.SKID:
-			_hold("skid", 0.25)
-		S.CROUCH, S.BELLY_GETUP, S.POUND_LAND, S.ROLL:
-			_loop("crouch", 1.0)
-		S.CRAWL:
-			_loop("crawl", 1.5)
-		S.CROUCH_SLIDE:
-			_hold("slide", -1.0)
-		S.DIVE, S.BELLY_SLIDE:
-			_hold("dive", 0.35)
-		S.LEDGE_HANG:
-			_hold("ledge_hang", 0.25)
-		S.LEDGE_CLIMB:
-			_loop("ledge_climb", 1.0)
-		S.FALL:
-			if _clips.get("fall", "") != _clips.get("jump", ""):
-				_loop("fall", 1.0)
-			else:
-				_air("jump")
-		S.DOUBLE_JUMP:
-			_air("double_jump")
-		S.TRIPLE_JUMP, S.BACKFLIP, S.SIDE_FLIP, S.ROLLOUT:
-			_air("flip")
-		S.GROUND_POUND:
-			_hold("ground_pound", 0.3)
-		_:
-			_air("jump")
-
-
-func _play(role: String) -> String:
-	var clip: String = _clips.get(role, "")
-	if clip == "":
-		return ""
-	if clip != _current_clip:
-		_ap.play(clip, crossfade)
-		_current_clip = clip
-	return clip
-
-
-func _loop(role: String, speed: float) -> void:
-	if _play(role) != "":
-		_ap.speed_scale = speed
-
-
-## True when the role has its own clip (first wish), not a stand-in from another role.
-func _dedicated(role: String, clip: String) -> bool:
-	return clip == CLIP_WISHES[role][0]
-
-
-## Hold one frame of a stand-in clip (time < 0 = its last frame). A dedicated clip
-## for the role plays normally instead.
-func _hold(role: String, time: float) -> void:
-	var clip := _play(role)
-	if clip == "":
-		return
-	if _dedicated(role, clip):
-		_ap.speed_scale = 1.0
-		return
-	var length := _ap.get_animation(clip).length
-	# Keep the player running (speed 1) so the crossfade from the previous clip
-	# finishes; pausing it froze the blend halfway. Pin the playhead each frame.
-	_ap.speed_scale = 1.0
-	# Stay a little short of the end so the clip never "finishes" and stops.
-	_ap.seek(clampf(length - 0.05 if time < 0.0 else time, 0.0, length - 0.05), true)
-
-
-## Match the stand-in jump clip to the jump arc: rising early in the clip, the top
-## in the middle, falling later. A dedicated clip (Jump, DoubleJump, Flip) plays
-## through normally instead.
-func _air(role: String) -> void:
-	var clip := _play(role)
-	if clip == "":
-		return
-	if _dedicated(role, clip):
-		_ap.speed_scale = 1.0
-		return
-	var length := _ap.get_animation(clip).length
-	var f := clampf(remap(player.vy, 40.0, -40.0, 0.15, 0.85), 0.15, 0.85)
-	_ap.speed_scale = 1.0   # see _hold: keeps crossfades running
-	_ap.seek(length * f, true)
