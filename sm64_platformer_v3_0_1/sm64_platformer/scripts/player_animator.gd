@@ -9,6 +9,15 @@ const S := Player.State
 
 @export var pose_sharpness := 18.0
 
+@export_group("Tempo")
+## Full-speed run tempo. Each footstep is half a beat, so 124 BPM = 248 steps a minute.
+@export var run_bpm := 124.0
+@export var steps_per_beat := 2.0
+
+## Emitted on every footstep while walking or running, at the low point of the
+## body's bob. strength = 0..1, how close to full speed.
+signal footstep(strength: float)
+
 @onready var player: Player = get_parent()
 @onready var body: Node3D = $Body
 @onready var head: Node3D = $Body/HeadPivot
@@ -102,7 +111,13 @@ func _target_pose(st: int, t: float, delta: float) -> Dictionary:
 			p.arm_l_out = 0.12 + sin(_time * 2.0) * 0.03
 			p.arm_r_out = p.arm_l_out
 		S.WALK, S.SKID_END, S.LAND:
-			_cycle += delta * lerpf(5.0, 13.0, minf(speed_ratio, 1.0))
+			# One full cycle (TAU) is two steps, so a step every PI radians.
+			var top_rate := run_bpm / 60.0 * steps_per_beat * PI
+			var prev := _cycle
+			_cycle += delta * lerpf(5.0, top_rate, minf(speed_ratio, 1.0))
+			if floorf(_cycle / PI) != floorf(prev / PI) and speed_ratio > 0.05:
+				footstep.emit(minf(speed_ratio, 1.0))
+			_cycle = fmod(_cycle, TAU)
 			var swing := sin(_cycle) * lerpf(0.35, 1.0, minf(speed_ratio, 1.0)) * minf(speed_ratio * 3.0, 1.0)
 			p.leg_l = swing
 			p.leg_r = -swing
