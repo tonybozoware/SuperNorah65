@@ -1,0 +1,7 @@
+#N canvas 40 40 900 700 12;
+#X text 20 2 dexed: the DX7 engine ([dexed~] \, built into godot-pd). Godot sends messages to 'dexed';
+#X obj 20 40 r dexed;
+#X obj 20 80 dexed~;
+#X obj 20 120 throw~ dexed_out;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;

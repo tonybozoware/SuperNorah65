@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="PlayerSkin" format=3]
+
+[ext_resource type="Script" path="res://scripts/player_skin.gd" id="1_skin"]
+
+[resource]
+script = ExtResource("1_skin")
+skin_name = "Plain"

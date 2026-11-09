@@ -3,7 +3,8 @@ extends Node3D
 ## - a landing shadow (dark disc) straight below the player
 ## - dust puffs (small grey spheres) on skids, slides, rolls and hard landings
 ## - controller rumble on ground pounds, hard landings, wall kicks and ledge grabs
-## - a short white-noise pulse on every footstep
+## The player's sounds are in sound kits (Player/Kit, res://kits/), played by the
+## scene's Instruments node.
 ## Lives on Player/FX. Everything is built in code so it needs no assets.
 
 @export_group("Shadow")
@@ -20,11 +21,6 @@ extends Node3D
 @export_group("Rumble")
 @export var rumble_enabled := true
 
-@export_group("Footstep Pulse")
-@export var step_pulse_enabled := true
-@export var step_pulse_length := 0.035   # s
-@export var step_pulse_volume_db := -12.0
-@export var step_pulse_min_volume := 0.35  # loudness at a slow walk, 1.0 at full speed
 
 const TRAIL_STATES := [Player.State.SKID, Player.State.BRAKE, Player.State.CROUCH_SLIDE,
 		Player.State.BELLY_SLIDE, Player.State.ROLL]
@@ -34,7 +30,6 @@ const TRAIL_STATES := [Player.State.SKID, Player.State.BRAKE, Player.State.CROUC
 var _shadow: MeshInstance3D
 var _trail: CPUParticles3D
 var _burst: CPUParticles3D
-var _step_player: AudioStreamPlayer
 
 
 func _ready() -> void:
@@ -45,10 +40,6 @@ func _ready() -> void:
 	player.pounded.connect(_on_pounded)
 	player.wall_kicked.connect(func(): _rumble(0.35, 0.2, 0.1))
 	player.ledge_grabbed.connect(func(): _rumble(0.25, 0.0, 0.08))
-	_step_player = _make_step_pulse()
-	var visual := player.get_node_or_null("Visual")
-	if visual and visual.has_signal("footstep"):
-		visual.connect("footstep", _on_footstep)
 
 
 func _process(_delta: float) -> void:
@@ -98,39 +89,6 @@ func _puff(amount: int, speed: float) -> void:
 	_burst.initial_velocity_min = speed * 0.6
 	_burst.initial_velocity_max = speed
 	_burst.restart()
-
-
-func _on_footstep(strength: float) -> void:
-	if not step_pulse_enabled:
-		return
-	_step_player.volume_db = step_pulse_volume_db + linear_to_db(lerpf(step_pulse_min_volume, 1.0, strength))
-	_step_player.play()
-
-
-## A short burst of white noise with a fast decay, built in code (no audio file).
-func _make_step_pulse() -> AudioStreamPlayer:
-	var rate := 44100
-	var n := int(step_pulse_length * rate)
-	var data := PackedByteArray()
-	data.resize(n * 2)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 64
-	for i in n:
-		var t := float(i) / n
-		var env := minf(t * n / 44.0, 1.0) * pow(1.0 - t, 3.0)   # 1 ms attack, quick decay
-		var s := int(clampf(rng.randf_range(-1.0, 1.0) * env, -1.0, 1.0) * 32767.0)
-		data.encode_s16(i * 2, s)
-	var wav := AudioStreamWAV.new()
-	wav.format = AudioStreamWAV.FORMAT_16_BITS
-	wav.mix_rate = rate
-	wav.stereo = false
-	wav.data = data
-	var ap := AudioStreamPlayer.new()
-	ap.stream = wav
-	ap.max_polyphony = 4
-	ap.volume_db = step_pulse_volume_db
-	add_child(ap)
-	return ap
 
 
 func _rumble(weak: float, strong: float, seconds: float) -> void:

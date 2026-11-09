@@ -1,0 +1,20 @@
+[gd_resource type="AudioBusLayout" format=3 uid="uid://2bc0ghqxbkt5"]
+
+[sub_resource type="AirwindowsPressure5" id="AirwindowsPressure5_p"]
+pressure = 0.25
+resource_name = "Pressure5"
+
+[sub_resource type="AirwindowsADClip8" id="AirwindowsADClip8_c"]
+resource_name = "ADClip8"
+
+[sub_resource type="AudioEffectHardLimiter" id="AudioEffectHardLimiter_l"]
+resource_name = "Safety Limiter"
+ceiling_db = -0.5
+
+[resource]
+bus/0/effect/0/effect = SubResource("AirwindowsPressure5_p")
+bus/0/effect/0/enabled = true
+bus/0/effect/1/effect = SubResource("AirwindowsADClip8_c")
+bus/0/effect/1/enabled = true
+bus/0/effect/2/effect = SubResource("AudioEffectHardLimiter_l")
+bus/0/effect/2/enabled = true

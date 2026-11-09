@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+# Builds the DexedSynth GDExtension (Biryani64).
+#   scons platform=linux target=template_release
+#   scons platform=windows use_mingw=yes use_llvm=yes mingw_prefix=... target=template_release
+env = SConscript("../../tools/godot-cpp/SConstruct")
+env.Append(CPPPATH=["src/", "src/msfa/"])
+sources = Glob("src/*.cpp") + Glob("src/msfa/*.cc") + Glob("src/msfa/*.cpp")
+lib = "addons/dexed/bin/libdexed{}{}".format(env["suffix"], env["SHLIBSUFFIX"])
+library = env.SharedLibrary(lib, source=sources)
+Default(library)

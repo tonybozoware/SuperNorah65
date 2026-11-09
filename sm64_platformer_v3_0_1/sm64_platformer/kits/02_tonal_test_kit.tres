@@ -1,0 +1,148 @@
+[gd_resource type="Resource" script_class="SoundKit" format=3]
+
+[ext_resource type="Script" path="res://scripts/kits/kit_event.gd" id="1_v4ohj"]
+[ext_resource type="Script" path="res://scripts/kits/kit_mod_route.gd" id="2_1ehcb"]
+[ext_resource type="Script" path="res://scripts/kits/sound_kit.gd" id="3_hph7h"]
+
+[sub_resource type="Resource" id="Resource_dsguk"]
+script = ExtResource("1_v4ohj")
+instrument = 4
+notes = PackedInt32Array(55, 59, 62, 65, 69, 72, 76)
+note_mode = 1
+length_seconds = 0.2
+velocity_from = 1
+velocity_min = 95.0
+velocity_max = 110.0
+
+[sub_resource type="Resource" id="Resource_y8kbj"]
+script = ExtResource("1_v4ohj")
+event = 1
+only_from = 9
+instrument = 5
+notes = PackedInt32Array(43, 53, 59, 64, 69, 72)
+hold_until_land = true
+
+[sub_resource type="Resource" id="Resource_q7ipm"]
+script = ExtResource("1_v4ohj")
+event = 1
+only_from = 10
+instrument = 5
+notes = PackedInt32Array(53, 57, 60, 65, 69, 72, 77)
+hold_until_land = true
+
+[sub_resource type="Resource" id="Resource_xsgie"]
+script = ExtResource("1_v4ohj")
+event = 1
+only_from = 11
+instrument = 5
+notes = PackedInt32Array(43, 53, 59, 64, 69, 72, 55, 65, 71, 76, 81, 84)
+hold_until_land = true
+
+[sub_resource type="Resource" id="Resource_1lra6"]
+script = ExtResource("1_v4ohj")
+event = 2
+instrument = 5
+notes = PackedInt32Array(55, 59, 62)
+length_seconds = 0.4838709677419355
+fade_on_next_jump = true
+velocity_from = 2
+velocity_min = 70.0
+velocity_max = 120.0
+
+[sub_resource type="Resource" id="Resource_4hhv5"]
+script = ExtResource("1_v4ohj")
+event = 2
+only_from = 11
+instrument = 5
+notes = PackedInt32Array(48, 52, 55, 60, 64, 67, 72)
+length_seconds = 0.4838709677419355
+velocity_from = 2
+velocity_min = 70.0
+velocity_max = 120.0
+
+[sub_resource type="Resource" id="Resource_v4ohj"]
+script = ExtResource("1_v4ohj")
+event = 11
+instrument = 4
+notes = PackedInt32Array(55, 59, 62, 65, 69, 72, 76)
+note_mode = 1
+length_seconds = 0.1
+velocity_from = 1
+velocity_min = 95.0
+velocity_max = 110.0
+
+[sub_resource type="Resource" id="Resource_1ehcb"]
+script = ExtResource("1_v4ohj")
+event = 1
+only_from = 12
+instrument = 5
+notes = PackedInt32Array(53, 57, 60)
+hold_until_land = true
+
+[sub_resource type="Resource" id="Resource_hph7h"]
+script = ExtResource("1_v4ohj")
+event = 1
+only_from = 13
+instrument = 5
+notes = PackedInt32Array(53, 57, 60)
+hold_until_land = true
+
+[sub_resource type="Resource" id="Resource_g17q4"]
+script = ExtResource("1_v4ohj")
+event = 1
+only_from = 14
+instrument = 5
+notes = PackedInt32Array(53, 57, 60)
+hold_until_land = true
+
+[sub_resource type="Resource" id="Resource_u3bgg"]
+script = ExtResource("2_1ehcb")
+out_min = 99.0
+out_max = 12000.0
+exponential = true
+
+[sub_resource type="Resource" id="Resource_74p50"]
+script = ExtResource("2_1ehcb")
+target = "drive"
+out_max = 0.85
+
+[sub_resource type="Resource" id="Resource_ba8d4"]
+script = ExtResource("2_1ehcb")
+source = 2
+target = "plaits_timbre"
+
+[resource]
+script = ExtResource("3_hph7h")
+kit_name = "Tonal Test Kit"
+events = Array[ExtResource("1_v4ohj")]([SubResource("Resource_dsguk"), SubResource("Resource_y8kbj"), SubResource("Resource_q7ipm"), SubResource("Resource_xsgie"), SubResource("Resource_1lra6"), SubResource("Resource_4hhv5"), SubResource("Resource_v4ohj"), SubResource("Resource_1ehcb"), SubResource("Resource_hph7h"), SubResource("Resource_g17q4")])
+steps_in_air = true
+patch = {
+"attack_ms": 2.0,
+"cutoff": 99.0,
+"decay_ms": 200.0,
+"detune_cents": 7.0,
+"dexed_polyphony": 32,
+"dexed_program": 0,
+"dexed_release_ms": 180.0,
+"dexed_volume": 0.25,
+"drive": 0.0,
+"filter_attack_ms": 2.0,
+"filter_decay_ms": 180.0,
+"filter_env_amount": 1200.0,
+"filter_release_ms": 120.0,
+"filter_sustain": 0.2,
+"filter_velocity": 0.3,
+"osc1_level": 0.0,
+"osc2_level": 0.0,
+"plaits_harmonics": 0.5,
+"plaits_level": 0.3,
+"plaits_model": 9,
+"plaits_morph": 0.5,
+"plaits_triggered": false,
+"release_ms": 90.0,
+"resonance": 0.5,
+"sub_level": 0.0,
+"sustain": 0.6,
+"synth_volume": 0.6
+}
+routes = Array[ExtResource("2_1ehcb")]([SubResource("Resource_u3bgg"), SubResource("Resource_74p50"), SubResource("Resource_ba8d4")])

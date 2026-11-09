@@ -1,12 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bfnxysv2wv4ps"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_smehm"]
-[ext_resource type="Script" path="res://scripts/player_animator.gd" id="2_ur7pv"]
-[ext_resource type="Material" path="res://materials/shirt.tres" id="3_y4r1p"]
-[ext_resource type="Material" path="res://materials/skin.tres" id="4_d2wvv"]
-[ext_resource type="Material" path="res://materials/pants.tres" id="5_3v2ag"]
-[ext_resource type="Material" path="res://materials/shoes.tres" id="6_jej6c"]
-[ext_resource type="Script" path="res://scripts/player_fx.gd" id="8_oprun"]
+[ext_resource type="Script" uid="uid://cxtbbngmnnjk" path="res://scripts/player.gd" id="1_smehm"]
+[ext_resource type="Script" uid="uid://b481fyfsxirql" path="res://scripts/player_animator.gd" id="2_ur7pv"]
+[ext_resource type="Material" uid="uid://5v0bnboyiyew" path="res://materials/shirt.tres" id="3_y4r1p"]
+[ext_resource type="Material" uid="uid://bblwi2qh2wbsf" path="res://materials/skin.tres" id="4_d2wvv"]
+[ext_resource type="Material" uid="uid://bxq25hho1ig53" path="res://materials/pants.tres" id="5_3v2ag"]
+[ext_resource type="Material" uid="uid://dkye5boc1pibq" path="res://materials/shoes.tres" id="6_jej6c"]
+[ext_resource type="Script" uid="uid://cj5ecdvklkwdx" path="res://scripts/player_fx.gd" id="8_oprun"]
+[ext_resource type="Script" uid="uid://dih5uqulwawrr" path="res://scripts/player_skin_switcher.gd" id="9_skin"]
+[ext_resource type="Script" path="res://scripts/kits/kit_player.gd" id="10_kit"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a8ls1"]
 radius = 0.35
@@ -145,3 +147,11 @@ mesh = SubResource("SphereMesh_31cv2")
 
 [node name="FX" type="Node3D" parent="." unique_id=164178985]
 script = ExtResource("8_oprun")
+
+[node name="Skin" type="Node" parent="." unique_id=934756599]
+script = ExtResource("9_skin")
+start_skin = 2
+
+[node name="Kit" type="Node" parent="."]
+script = ExtResource("10_kit")
+start_kit = 1

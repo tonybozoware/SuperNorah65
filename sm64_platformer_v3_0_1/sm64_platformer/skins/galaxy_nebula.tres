@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PlayerSkin" format=3]
+
+[ext_resource type="Script" path="res://scripts/player_skin.gd" id="1_skin"]
+[ext_resource type="Shader" path="res://skins/galaxy.gdshader" id="2_shader"]
+[ext_resource type="VideoStreamTheora" path="res://skins/videos/galaxy_nebula.ogv" id="3_video"]
+[ext_resource type="PackedScene" path="res://skins/galaxy_stars.tscn" id="4_stars"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gal"]
+shader = ExtResource("2_shader")
+
+[resource]
+script = ExtResource("1_skin")
+skin_name = "Galaxy (Nebula)"
+body_material = SubResource("ShaderMaterial_gal")
+video = ExtResource("3_video")
+emitter_scene = ExtResource("4_stars")
+light_energy = 0.5
+light_color = Color(0.5, 0.6, 1, 1)
+light_range = 3.0

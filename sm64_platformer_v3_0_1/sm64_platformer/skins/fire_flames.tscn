@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://skins/fire_flame.gdshader" id="1_flame"]
+
+[sub_resource type="Gradient" id="Gradient_fl"]
+offsets = PackedFloat32Array(0, 0.15, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0.6, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_fl"]
+gradient = SubResource("Gradient_fl")
+
+[sub_resource type="Curve" id="Curve_fl"]
+_data = [Vector2(0, 0.6), 0.0, 0.0, 0, 0, Vector2(0.3, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.2), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_fl"]
+curve = SubResource("Curve_fl")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fl"]
+emission_shape = 1
+emission_sphere_radius = 0.06
+direction = Vector3(0, 1, 0)
+spread = 15.0
+initial_velocity_min = 0.5
+initial_velocity_max = 1.0
+gravity = Vector3(0, 1.5, 0)
+scale_min = 0.7
+scale_max = 1.1
+scale_curve = SubResource("CurveTexture_fl")
+color_ramp = SubResource("GradientTexture1D_fl")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fl"]
+frequency = 0.02
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_fl"]
+width = 128
+height = 128
+seamless = true
+noise = SubResource("FastNoiseLite_fl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fl"]
+render_priority = 2
+shader = ExtResource("1_flame")
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_fl")
+shader_parameter/fire_speed = Vector2(0, 1.5)
+
+[sub_resource type="QuadMesh" id="QuadMesh_fl"]
+material = SubResource("ShaderMaterial_fl")
+size = Vector2(0.22, 0.34)
+center_offset = Vector3(0, 0.12, 0)
+
+[node name="FireFlames" type="GPUParticles3D"]
+amount = 10
+lifetime = 0.45
+local_coords = false
+process_material = SubResource("ParticleProcessMaterial_fl")
+draw_pass_1 = SubResource("QuadMesh_fl")

@@ -13,6 +13,11 @@ signal landed(impact: float)    # impact = downward speed in u/f
 signal pounded
 signal wall_kicked
 signal ledge_grabbed
+signal jumped(kind: int)       # kind = the State the jump starts (JUMP, DOUBLE_JUMP, BACKFLIP...)
+signal wall_hit(speed: float)   # first touch of a wall; speed = u/f into the wall
+signal ceiling_hit(speed: float) # first touch of a ceiling; speed = u/f upward
+signal state_changed(from: int, to: int)
+signal respawned                 # put back at a spawn point (e.g. by a kill zone)
 
 enum State {
 	IDLE, WALK, BRAKE, SKID, SKID_END, CROUCH, CRAWL, CROUCH_SLIDE, LAND,
@@ -182,6 +187,8 @@ var ledge_regrab_timer := 0.0
 var camera_turned_by_hand := false  # set by the camera rig each frame
 var _ref_yaw := 0.0
 var _last_stick_angle := 0.0
+var _touching_wall := false
+var _touching_ceiling := false
 
 var _stand_shape := CapsuleShape3D.new()
 var _crouch_shape := CapsuleShape3D.new()
@@ -243,6 +250,7 @@ func _physics_process(delta: float) -> void:
 	var was_ground := state in GROUND_STATES
 	var before := global_position
 	move_and_slide()
+	_report_contacts(h)
 	if was_ground and is_on_floor() and is_on_ceiling():
 		# Squeezed between floor and a sloped ceiling (e.g. sliding under a ramp):
 		# treat the ceiling as a wall instead of being wedged into the ground.
@@ -590,6 +598,7 @@ func _launch(new_state: State, up: float) -> void:
 	coyote_timer = 0.0
 	double_jump_timer = 0.0
 	_set_state(new_state)
+	jumped.emit(new_state)
 
 
 # ------------------------------------------------------------------ air states
@@ -913,8 +922,25 @@ func _apply_shape(crouched: bool) -> void:
 # ------------------------------------------------------------------ helpers
 func _set_state(new_state: State) -> void:
 	if new_state != state:
+		var old := state
 		state = new_state
 		state_frames = 0.0
+		state_changed.emit(old, new_state)
+
+
+## Emit wall_hit / ceiling_hit once when a contact starts (not every frame of it).
+func _report_contacts(h: Vector3) -> void:
+	var on_wall := is_on_wall()
+	if on_wall and not _touching_wall:
+		var n := get_wall_normal()
+		var into := -Vector3(h.x, 0.0, h.z).dot(Vector3(n.x, 0.0, n.z).normalized()) / U
+		if into > 2.0:
+			wall_hit.emit(into)
+	_touching_wall = on_wall
+	var on_ceiling := is_on_ceiling()
+	if on_ceiling and not _touching_ceiling:
+		ceiling_hit.emit(maxf(vy, 0.0) if state in AIR_STATES else 0.0)
+	_touching_ceiling = on_ceiling
 
 
 func respawn(at: Vector3) -> void:
@@ -928,6 +954,7 @@ func respawn(at: Vector3) -> void:
 	coyote_timer = 0.0
 	_set_state(State.FALL)
 	reset_physics_interpolation()
+	respawned.emit()
 
 
 func _dir_of(yaw: float) -> Vector3:

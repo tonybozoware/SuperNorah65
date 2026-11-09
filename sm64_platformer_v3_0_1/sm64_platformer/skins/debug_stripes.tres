@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlayerSkin" format=3]
+
+[ext_resource type="Script" path="res://scripts/player_skin.gd" id="1_skin"]
+[ext_resource type="Shader" path="res://skins/debug_stripes.gdshader" id="2_shader"]
+[ext_resource type="PackedScene" path="res://skins/debug_sparks.tscn" id="3_sparks"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_db"]
+shader = ExtResource("2_shader")
+
+[resource]
+script = ExtResource("1_skin")
+skin_name = "Debug Stripes"
+body_material = SubResource("ShaderMaterial_db")
+emitter_scene = ExtResource("3_sparks")
+light_energy = 0.6
+light_color = Color(1, 0.3, 0.8, 1)
+light_range = 2.5
